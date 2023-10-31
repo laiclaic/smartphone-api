@@ -1,24 +1,18 @@
+from marshmallow import fields
 import json
-from flask import Flask, Response, jsonify, redirect, render_template, request, make_response
+from flask import Flask, jsonify, request, make_response
 from flask_marshmallow import Marshmallow
 from flask_restful import *
 from models import *
 from helper import *
-from flask_sqlalchemy import SQLAlchemy
-from marshmallow import fields
-from marshmallow_sqlalchemy import SQLAlchemySchema
 
 app = Flask(__name__)
+ma = Marshmallow(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///smartphones.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-ma = Marshmallow(app) 
-
-@app.before_request
-def create_table():
-    db.create_all()
 
 class SmartphoneSchema(ma.SQLAlchemyAutoSchema):
    class Meta:
@@ -50,6 +44,12 @@ class SmartphoneSchema(ma.SQLAlchemyAutoSchema):
    extended_memory_available = fields.Boolean(required=True)
    resolution_height = fields.Number(required=True)
    resolution_width = fields.Number(required=True)
+
+
+
+@app.before_request
+def create_table():
+    db.create_all()
 
 
 @app.route('/smartphone', methods=['GET','POST'])

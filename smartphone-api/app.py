@@ -45,12 +45,9 @@ class SmartphoneSchema(ma.SQLAlchemyAutoSchema):
    resolution_height = fields.Number(required=True)
    resolution_width = fields.Number(required=True)
 
-
-
 @app.before_request
 def create_table():
     db.create_all()
-
 
 @app.route('/smartphone', methods=['GET','POST'])
 def fetch():
@@ -74,10 +71,7 @@ def fetch_by_id(smartphone_id):
         return make_response(jsonify({"smartphone": smartphone}))
     elif request.method == 'PUT':
         data = request.get_json()
-        if data.get('smartphone_id'):
-            get_smartphone.smartphone_id = data['smartphone_id']
-        if data.get('brand_name'):
-            get_smartphone.brand_name = data['brand_name']
+        update_data(get_smartphone, data)
         db.session.add(get_smartphone)
         db.session.commit()
         smartphone_schema = SmartphoneSchema(only=['smartphone_id', 'brand_name'])
